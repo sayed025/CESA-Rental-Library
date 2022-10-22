@@ -32,7 +32,7 @@ include "navbar.php";
     <div class="reg_img">
       <div class="box2">
 
-        <h1 style="text-align: center;font-size:25px;font-family = Lucida Console;"> CESA Library Management </h1>
+        <h1 style="text-align: center;font-size:25px;font-family=Lucida Console;"> CESA Library Management </h1>
         <h1 style="text-align: center; font-size:15px;">User Registration Form </h1> <br>
 
         <form name="registration" action="" method="post">
@@ -66,8 +66,18 @@ include "navbar.php";
     }
 
     if ($count == 0) {
+      $token = bin2hex(random_bytes(20));
       mysqli_query($db, "INSERT INTO `student` VALUES ('$_POST[first]','$_POST[last]',
-        '$_POST[roll]','$_POST[email]','$_POST[contact]','$_POST[username]','$_POST[password]','user.jpg' );");
+        '$_POST[roll]','$_POST[email]','$_POST[contact]','$_POST[username]','$_POST[password]','user.jpg', '$token' );");
+
+      $msg = 'Account creation success. Before login, please activate your account by clicking the link: ';
+      $msg .= '<a href="http://localhost/library/login.php?verification=' . $token . '">Click to activate your account</a>';
+
+      try {
+        mail($_POST["email"], 'Account Registration : Please activate your account', $msg);
+      } catch (\Throwable $th) {
+        throw $th;
+      }
 
   ?>
       <script type="text/javascript">

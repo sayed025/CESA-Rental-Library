@@ -1,6 +1,17 @@
 <?php
 include "connection.php";
 include "navbar.php";
+
+$verified = false;
+if (isset($_GET['verification'])) {
+  $res = mysqli_query($db, "SELECT * FROM `student` WHERE verification_token='$_GET[verification]';");
+  $count = mysqli_num_rows($res);
+
+  if ($count > 0) {
+    mysqli_query($db, "UPDATE `student` SET verification_token=null WHERE verification_token='$_GET[verification]';");
+    $verified = true;
+  }
+}
 ?>
 
 
@@ -49,6 +60,14 @@ include "navbar.php";
       <br><br><br>
       <div class="box1">
         <h1 style="text-align: center;font-size:35px;font-family = Lucida Console;"> CESA Library Management </h1>
+        <?php
+          if (isset($_GET['verification']) && $verified) {
+
+            ?>
+          <h2 style="text-align: center;font-size:15px;font-family = Lucida Console;">Account verified. You can login now.</h2>
+            <?php
+          }
+        ?>
         <h1 style="text-align: center; font-size:25px;"> Login Form </h1>
         <br>
         <form name="login" action="" method="post">
@@ -91,7 +110,7 @@ include "navbar.php";
           alert("Wrong username or password");
         </script>
       <?php
-      } else {
+      }  else {
 
         /*if macthes*/
 
@@ -114,6 +133,12 @@ include "navbar.php";
       ?>
         <script type="text/javascript">
           alert("Wrong username or password");
+        </script>
+      <?php
+      } else if ($row['verification_token'] != null) {
+        ?>
+        <script type="text/javascript">
+          alert("Please verify your account first.");
         </script>
       <?php
       } else {
